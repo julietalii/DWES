@@ -1,6 +1,6 @@
 <h1 align="center"> DWES </h1>
-<img src="![image](https://github.com/user-attachments/assets/fe1092b5-839e-406e-bee2-1b6f7f03ca61)
-" alt="DWES">
+<img src="https://github.com/user-attachments/assets/c72bc924-dd0d-4885-8390-494cba2d45d8" align="center" alt ="Gatito_juli"/>
+
 
 (https://img.shields.io/badge/license-public-blue)
 https://img.shields.io/badge/version%v4.0.1-8A2BE2
