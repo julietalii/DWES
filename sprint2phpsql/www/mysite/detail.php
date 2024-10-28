@@ -28,10 +28,10 @@ echo '<h3>Fecha de Publicación: ' . $only_row['fecha_publicacion'] . '</h3>';
 <ul>
 <?php
 // Consultar los comentarios asociados al libro
-$query2 = 'SELECT comentario FROM tComentarios WHERE libro_id='.$id;
+$query2 = 'SELECT comentario, fecha FROM tComentarios WHERE libro_id='.$id;
 $result2 = mysqli_query($db, $query2) or die('Query error');
 while ($row = mysqli_fetch_array($result2)) {
-    echo '<li>' . $row['comentario'] . '</li>';
+    echo '<li>' . $row['comentario'] . ' <em>(' . $row['fecha'] . ')</em></li>';
 }
 mysqli_close($db);
 ?>
