@@ -16,6 +16,8 @@ if (!$only_row) {
     die('No se encontró el libro con el ID especificado.');
 }
 
+$libro_id = $id;
+
 // Mostrar detalles del libro
 echo '<h1>' . $only_row['nombre'] . '</h1>';
 echo '<img src="' . $only_row['url_imagen'] . '" alt="' . $only_row['nombre'] . '" style="width:200px;height:auto;">';
@@ -34,6 +36,13 @@ while ($row = mysqli_fetch_array($result2)) {
 mysqli_close($db);
 ?>
 </ul>
+<!--Comentarios -->
+<p>Deja un nuevo comentario:</p>
+<form action="/comment.php" method="post">
+<textarea rows="4" cols="50" name="new_comment"></textarea><br>
+<input type="hidden" name="libro_id" value="<?php echo $libro_id; ?>">
+<input type="submit" value="Comentar">
+</form>
+
 </body>
 </html>
-

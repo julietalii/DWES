@@ -16,6 +16,7 @@ while ($row = mysqli_fetch_array($result)) {
     echo $row['autor'] . '<br>';
     echo '<img src="' . $row['url_imagen'] . '" style="width:100px; height:100px;"><br>';
     echo '<a href="http://localhost:8083/detail.php?id=' . $row['id'] . '">Ver más.</a><br><br>';
+    
 }
 mysqli_close($db);
 ?>
