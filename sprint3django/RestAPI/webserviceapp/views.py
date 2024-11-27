@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from .models import Tlibros  
 from django.shortcuts import render
-#from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 
@@ -42,3 +42,16 @@ def devolver_libro_por_id(request, id_solicitado):
 	}
 	return JsonResponse(resultado, json_dumps_params = {'ensure_ascii': False})
 
+
+@csrf_exempt
+def guardar_comentario(request, libro_id):
+	if request.method != 'POST':
+		return None
+	print (request.body)
+	json_peticion = json.loads(request.body)
+	comentario = Tcomentarios()
+	comentario.comentario = json_peticion['nuevo_comentario']
+	comentario.libroid = Tlibros.objects.get(id = libro_id)
+	comentario.save()
+	return JsonResponse({"status": "ok"})
+# Create your views here.
