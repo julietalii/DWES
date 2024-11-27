@@ -4,8 +4,8 @@ from django.shortcuts import render
 #from django.views.decorators.csrf import csrf_exempt
 import json
 
-#from .models import Tlibros
-#from .models import Tcomentarios
+
+from .models import Tcomentarios
 
 def pagina_de_prueba(request):
 	return HttpResponse("<h1>Hola a todos</h1>");
@@ -22,3 +22,23 @@ def devolver_libros(request):
 		diccionario['fecha_publicacion'] = fila_sql.fecha_publicacion
 		respuesta_final.append(diccionario)
 	return JsonResponse(respuesta_final, safe=False)
+
+def devolver_libro_por_id(request, id_solicitado):
+	libro = Tlibros.objects.get(id=id_solicitado)
+	comentarios = libro.tcomentarios_set.all()
+	lista_comentarios = []
+	for fila_comentario_sql in comentarios:
+		diccionario = {}
+		diccionario['id'] = fila_comentario_sql.id
+		diccionario['comentario'] = fila_comentario_sql.comentario
+		lista_comentarios.append(diccionario)
+	resultado = {
+			'id':libro.id,
+			'nombre':libro.nombre,
+			'url_imagen':libro.url_imagen,
+			'autor':libro.autor,
+			'fecha_publicacion':libro.fecha_publicacion,
+			'comentario':lista_comentarios
+	}
+	return JsonResponse(resultado, json_dumps_params = {'ensure_ascii': False})
+
