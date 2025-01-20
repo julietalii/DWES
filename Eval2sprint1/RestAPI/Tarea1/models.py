@@ -1,9 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 class Usuarios(AbstractUser):
-    rol=models.CharField(max_length=20)
-    biografia=models.CharField(max_length=100)
+    ROLES = [
+        ('organizador', 'Organizador'),
+        ('participante', 'Participante'),
+    ]
+    rol = models.CharField(max_length=20, choices=ROLES, default='participante')
+    biografia = models.TextField()
+    groups = models.ManyToManyField(Group, related_name='tarea1_users', blank=True)
+    user_permissions = models.ManyToManyField(Permission, related_name='tarea1_users_permissions', blank=True)
+
     def __str__(self):
         return self.username
 
@@ -29,8 +36,14 @@ class Reservas(models.Model):
     id_evento = models.ForeignKey(Eventos, on_delete=models.CASCADE)
     id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
     entradas = models.IntegerField()
-    estado = models.CharField(max_length=20)
+    ESTADOS = [
+        ('pendiente', 'Pendiente'),
+        ('confirmada', 'Confirmada'),
+        ('cancelada', 'Cancelada'),
+    ]
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
     def __str__(self):
         return self.informacion
+
 # Create your models here.
 
