@@ -8,11 +8,11 @@ admin.site.register(Comentarios)
 
 
 class EventoAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'organizador', 'fecha_hora', 'capacidad_maxima')
+    list_display = ('titulo', 'fecha_hora', 'capacidad')
     search_fields = ('titulo', 'descripcion')
-    list_filter = ('organizador',)
+    list_filter = ('fecha_hora')
 
-admin.site.register(Eventos, EventoAdmin)
+
 
 
 # Register your models here.
