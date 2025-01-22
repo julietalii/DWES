@@ -20,4 +20,5 @@ from Tarea1 import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('listar_eventos', views.listar_eventos),
+    path('evento/', views.eventos_segun_nombre),
 ]
