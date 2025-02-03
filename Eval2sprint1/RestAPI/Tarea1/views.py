@@ -229,5 +229,64 @@ def crear_reserva(request):
 
     return JsonResponse({"error": "Método no permitido."}, status=405)
 
+#PUT/PATCH:
+@csrf_exempt
+def actualizar_reserva(request):
+    if request.method in ["PUT", "PATCH"]:
+        try:
+            info = json.loads(request.body)
+            username = info.get("usuario", "")
+            titulo_evento = info.get("evento", "")
+            nuevo_estado = info.get("estado", "")
 
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+            if usuario.rol != "organizador":
+                return JsonResponse({"error": "No tienes permisos para actualizar reservas."}, status=403)
+
+            reserva = Reservas.objects.filter(id_evento__titulo=titulo_evento).first()
+            if not reserva:
+                return JsonResponse({"error": "Reserva no encontrada."}, status=404)
+
+            reserva.estado = nuevo_estado
+            reserva.save()
+
+            return JsonResponse({"mensaje": "Estado de la reserva actualizado correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+# delete:
+@csrf_exempt
+def cancelar_reserva(request):
+    if request.method == "DELETE":
+        try:
+            info = json.loads(request.body)
+            username = info.get("usuario", "")
+            titulo_evento = info.get("evento", "")
+
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+            reserva = Reservas.objects.filter(id_evento__titulo=titulo_evento, id_usuario=usuario).first()
+            if not reserva:
+                return JsonResponse({"error": "Reserva no encontrada."}, status=404)
+
+            reserva.delete()
+
+            return JsonResponse({"mensaje": "Reserva cancelada correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+#
 # Create your views here.
