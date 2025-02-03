@@ -26,5 +26,6 @@ urlpatterns = [
     path('actualizar_evento', views.actualizar_evento),
     path('eliminar_evento', views.eliminar_evento),
     path('listar_reservas_usuario', views.listar_reservas_usuario),
+    path('crear_reserva', views.crear_reserva),
 
 ]

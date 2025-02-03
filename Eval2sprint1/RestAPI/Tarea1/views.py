@@ -194,4 +194,40 @@ def listar_reservas_usuario(request):
 
     return JsonResponse({"error": "Método no permitido."}, status=405)
 
+
+#POST:
+@csrf_exempt
+def crear_reserva(request):
+    if request.method == "POST":
+        try:
+            info = json.loads(request.body)
+            username = info.get("usuario", "")
+            titulo_evento = info.get("evento", "")
+            entradas = int(info.get("entradas", 1))
+
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+            evento = Eventos.objects.filter(titulo=titulo_evento).first()
+            if not evento:
+                return JsonResponse({"error": "Evento no encontrado."}, status=404)
+
+            # Verificar disponibilidad de entradas
+            reservas_actuales = Reservas.objects.filter(id_evento=evento).count()
+            if reservas_actuales + entradas > evento.capacidad:
+                return JsonResponse({"error": "No hay suficientes espacios disponibles."}, status=400)
+
+            # Crear la reserva
+            reserva = Reservas.objects.create(id_usuario=usuario, id_evento=evento, entradas=entradas)
+            return JsonResponse({"mensaje": "Reserva creada correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+
+
 # Create your views here.
