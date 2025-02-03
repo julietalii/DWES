@@ -74,7 +74,58 @@ def crear_evento(request):
         except KeyError as e:
             return JsonResponse({"error": f"Falta el campo {str(e)}"}, status=400)
     return JsonResponse({"error": "Método no permitido."}, status=405)
-#adaptando 29-01-2025
 
+
+#PUT/PATCH:
+# Actualizar un evento (solo organizadores)
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from Tarea1.models import Eventos, Usuarios
+import json
+
+
+@csrf_exempt
+def actualizar_evento(request):
+    if request.method in ["PUT", "PATCH"]:
+        try:
+            info = json.loads(request.body)
+
+
+            username = info.get("usuario", "")
+            titulo_evento = info.get("titulo", "")
+
+
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+
+            evento = Eventos.objects.filter(titulo=titulo_evento).first()
+            if not evento:
+                return JsonResponse({"error": "Evento no encontrado."}, status=404)
+
+            if usuario.rol != "organizador":
+                return JsonResponse({"error": "No tienes permisos para actualizar eventos."}, status=403)
+
+
+            if hasattr(evento, 'usuario') and usuario != evento.usuario:
+                return JsonResponse({"error": "Solo el organizador del evento puede actualizarlo."}, status=403)
+
+
+            evento.descripcion = info.get("descripcion", evento.descripcion)
+            evento.fecha_hora = info.get("fecha_hora", evento.fecha_hora)
+            evento.capacidad = info.get("capacidad", evento.capacidad)
+            evento.url = info.get("url", evento.url)
+            evento.save()
+
+            return JsonResponse({"mensaje": "Evento actualizado correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+#DELETE:
 
 # Create your views here.
