@@ -127,5 +127,45 @@ def actualizar_evento(request):
 
     return JsonResponse({"error": "Método no permitido."}, status=405)
 #DELETE:
+@csrf_exempt
+def eliminar_evento(request):
+    if request.method == "DELETE":
+        try:
+            info = json.loads(request.body)
+
+            # Toma el username del usuario y el título del evento
+            username = info.get("usuario", "")
+            titulo_evento = info.get("titulo", "")
+
+            # Verifica que el usuario existe
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+            # Verifica que el evento existe antes de eliminarlo
+            evento = Eventos.objects.filter(titulo=titulo_evento).first()
+            if not evento:
+                return JsonResponse({"error": "Evento no encontrado."}, status=404)
+
+            # Verifica si el usuario es organizador
+            if usuario.rol != "organizador":
+                return JsonResponse({"error": "No tienes permisos para eliminar eventos."}, status=403)
+
+            # Si el modelo tiene "usuario", verifica que el usuario creó el evento
+            if hasattr(evento, 'usuario') and usuario != evento.usuario:
+                return JsonResponse({"error": "Solo el organizador del evento puede eliminarlo."}, status=403)
+
+            # Eliminar el evento
+            evento.delete()
+
+            return JsonResponse({"mensaje": "Evento eliminado correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+
 
 # Create your views here.
