@@ -168,4 +168,30 @@ def eliminar_evento(request):
     return JsonResponse({"error": "Método no permitido."}, status=405)
 
 
+#punto 2: reservas
+#get:
+
+@csrf_exempt
+def listar_reservas_usuario(request):
+    if request.method == "GET":
+        try:
+            info = json.loads(request.body)
+            username = info.get("usuario", "")
+
+            usuario = Usuarios.objects.filter(username=username).first()
+            if not usuario:
+                return JsonResponse({"error": "Usuario no encontrado."}, status=404)
+
+            reservas = Reservas.objects.filter(id_usuario=usuario)
+            reservas_lista = [{"evento": r.id_evento.titulo, "entradas": r.entradas, "estado": r.estado} for r in reservas]
+
+            return JsonResponse({"reservas": reservas_lista}, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+
 # Create your views here.
