@@ -342,4 +342,50 @@ def crear_comentario(request):
             return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Método no permitido."}, status=405)
+#register:
+@csrf_exempt
+def registrar_usuario(request):
+    if request.method == "POST":
+        try:
+            info = json.loads(request.body)
+            username = info.get("username", "")
+            password = info.get("password", "")
+            rol = info.get("rol", "participante")  # Por defecto será "participante"
+
+            if Usuarios.objects.filter(username=username).exists():
+                return JsonResponse({"error": "El usuario ya existe."}, status=400)
+
+            usuario = Usuarios.objects.create_user(username=username, password=password, rol=rol)
+            return JsonResponse({"mensaje": "Usuario registrado correctamente."})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+
+#login:
+
+@csrf_exempt
+def login_usuario(request):
+    if request.method == "POST":
+        try:
+            info = json.loads(request.body)
+            username = info.get("username", "")
+            password = info.get("password", "")
+
+            usuario = authenticate(username=username, password=password)
+            if usuario:
+                login(request, usuario)
+                return JsonResponse({"mensaje": "Inicio de sesión exitoso."})
+            else:
+                return JsonResponse({"error": "Credenciales incorrectas."}, status=401)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
 # Create your views here.
