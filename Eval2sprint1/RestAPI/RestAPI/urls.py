@@ -30,5 +30,6 @@ urlpatterns = [
     path('actualizar_reserva', views.actualizar_reserva),
     path('cancelar_reserva', views.cancelar_reserva),
     path('listar_comentarios', views.listar_comentarios),
+    path('crear_comentario', views.crear_comentario),
 
 ]
