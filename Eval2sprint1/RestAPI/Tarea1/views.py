@@ -289,4 +289,29 @@ def cancelar_reserva(request):
 
     return JsonResponse({"error": "Método no permitido."}, status=405)
 #
+#Comentarios:
+#get:
+@csrf_exempt
+def listar_comentarios(request):
+    if request.method == "GET":
+        try:
+            info = json.loads(request.body)
+            titulo_evento = info.get("evento", "")
+
+            evento = Eventos.objects.filter(titulo=titulo_evento).first()
+            if not evento:
+                return JsonResponse({"error": "Evento no encontrado."}, status=404)
+
+            comentarios = Comentarios.objects.filter(id_evento=evento)
+            comentarios_lista = [{"usuario": c.id_usuario.username, "comentario": c.texto, "fecha": c.fecha} for c in comentarios]
+
+            return JsonResponse({"comentarios": comentarios_lista}, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON inválido."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido."}, status=405)
+
 # Create your views here.
