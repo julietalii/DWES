@@ -370,22 +370,25 @@ def registrar_usuario(request):
 @csrf_exempt
 def login_usuario(request):
     if request.method == "POST":
+        info = json.loads(request.body)
+
+        username = info.get("username")
+        contrasena = info.get("password")
+
+        if not username or not contrasena:
+            return JsonResponse({"error": "Usuario y contraseña requeridos"})
         try:
-            info = json.loads(request.body)
-            username = info.get("username", "")
-            password = info.get("password", "")
+            user = Usuarios.objects.get(username=username)
+        except Usuarios.DoesNotExist:
+            return JsonResponse({"error": "Usuario no encontrado"})
 
-            usuario = authenticate(username=username, password=password)
-            if usuario:
-                login(request, usuario)
-                return JsonResponse({"mensaje": "Inicio de sesión exitoso."})
-            else:
-                return JsonResponse({"error": "Credenciales incorrectas."}, status=401)
+        if contrasena == user.password:
+            return JsonResponse({"message": "Usuario autenticado"})
+        else:
+            return JsonResponse({"error": "Credenciales inválidas"})
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "JSON inválido."}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": f"Error inesperado: {str(e)}"}, status=500)
+    return JsonResponse({"error": "Método no permitido"})
 
-    return JsonResponse({"error": "Método no permitido."}, status=405)
+
+
 # Create your views here.

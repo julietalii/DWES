@@ -25,12 +25,15 @@ urlpatterns = [
     path('eventospagina', views.eventos_por_paginas),
     path('actualizar_evento', views.actualizar_evento),
     path('eliminar_evento', views.eliminar_evento),
-    path('listar_reservas_usuario', views.listar_reservas_usuario),
+
+    path('listar_reservas_usuario/', views.listar_reservas_usuario),
     path('crear_reserva', views.crear_reserva),
     path('actualizar_reserva', views.actualizar_reserva),
     path('cancelar_reserva', views.cancelar_reserva),
+
     path('listar_comentarios', views.listar_comentarios),
     path('crear_comentario', views.crear_comentario),
+
     path('registrar_usuario', views.registrar_usuario),
     path('login_usuario', views.login_usuario),
 
